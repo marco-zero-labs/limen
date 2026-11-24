@@ -25,6 +25,7 @@ Na primeira abertura, escolha o perfil em **Entrar como** (Pastor, Secretaria ou
 ```bash
 npm test                  # regras de negócio, permissões, dados de exemplo, repositório, importação
 npx tsc --noEmit          # TypeScript strict
+npx expo lint             # ESLint com eslint-config-expo (eslint.config.js)
 npm run build:web         # npx expo export -p web + 404.html e .nojekyll para o GitHub Pages
 ```
 

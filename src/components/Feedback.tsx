@@ -51,7 +51,7 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
 function ToastView({ msg, onClose }: { msg: ToastMsg | null; onClose: () => void }) {
   const { wide } = useLayout();
   const insets = useSafeAreaInsets();
-  const opacity = useRef(new Animated.Value(0)).current;
+  const [opacity] = useState(() => new Animated.Value(0));
   useEffect(() => {
     Animated.timing(opacity, { toValue: msg ? 1 : 0, duration: 150, useNativeDriver: Platform.OS !== 'web' }).start();
   }, [msg, opacity]);

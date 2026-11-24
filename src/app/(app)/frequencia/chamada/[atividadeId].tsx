@@ -50,8 +50,8 @@ function Lista({ d, a }: { d: AppData; a: Activity }) {
   const [tab, setTab] = useState<'faltam' | 'presentes'>('faltam');
   const [filter, setFilter] = useState('');
   const [saving, setSaving] = useState(false);
+  // `apply` é o único caminho que muda o estado e atualiza os dois juntos
   const stateRef = useRef(state);
-  stateRef.current = state;
 
   const prev = previousRecord(d.attendance, { activityId: a.id, date: a.date });
   const persist = (s: ChamadaState) => repo.saveChamada({ activityId: a.id, title: a.title, date: a.date, presentIds: s.present, done: !!record?.done }, viewer.userId);

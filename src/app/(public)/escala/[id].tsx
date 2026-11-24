@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { View } from 'react-native';
 import { Button } from '@/components/Button';
 import { DataState } from '@/components/DataState';
@@ -26,8 +26,9 @@ export default function ConfirmarEscala() {
     events: await r.listEvents(),
   }));
   const [message, setMessage] = useState('');
-  const [sentMsg, setSentMsg] = useState(false);
-  useEffect(() => setSentMsg(false), [id]);
+  // o recado vale só para o link em que foi enviado
+  const [sentFor, setSentFor] = useState<string | null>(null);
+  const sentMsg = sentFor === id;
 
   if (!q.data) {
     return (
@@ -75,7 +76,7 @@ export default function ConfirmarEscala() {
               disabled={!message.trim()}
               onPress={async () => {
                 await respond('recusou', message);
-                setSentMsg(true);
+                setSentFor(id);
                 toast('Recado enviado');
               }}
             />

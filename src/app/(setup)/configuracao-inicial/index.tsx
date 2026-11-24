@@ -34,33 +34,35 @@ function Form({ church }: { church: Church }) {
   const repo = useRepo();
   const { toast } = useFeedback();
   const [f, setF] = useState({ ...church });
-  const [cepState, setCepState] = useState<'idle' | 'loading' | 'ok' | 'fail' | 'notfound'>('idle');
+  const [cepResult, setCepResult] = useState<{ cep: string; state: 'ok' | 'fail' | 'notfound' } | null>(null);
   const [tried, setTried] = useState(false);
   const set = (k: keyof Church) => (v: string) => setF((x) => ({ ...x, [k]: v }));
 
-  // busca o endereço pelo CEP (ViaCEP); sem internet, o preenchimento é manual
+  // busca o endereço pelo CEP (ViaCEP); sem internet, o preenchimento é manual.
+  // "Buscando" é o intervalo entre um CEP novo completo e a resposta para esse mesmo CEP.
+  const cep = onlyDigits(f.cep);
+  const lookup = cep.length === 8 && cep !== onlyDigits(church.cep);
+  const cepState = !lookup ? 'idle' : cepResult?.cep === cep ? cepResult.state : 'loading';
   useEffect(() => {
-    const cep = onlyDigits(f.cep);
-    if (cep.length !== 8 || cep === onlyDigits(church.cep)) return;
+    if (!lookup) return;
     let alive = true;
-    setCepState('loading');
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 5000);
     fetch(`https://viacep.com.br/ws/${cep}/json/`, { signal: ctrl.signal })
       .then((r) => r.json() as Promise<ViaCep>)
       .then((j) => {
         if (!alive) return;
-        if (j.erro) return setCepState('notfound');
+        if (j.erro) return setCepResult({ cep, state: 'notfound' });
         setF((x) => ({ ...x, street: j.logradouro || x.street, district: j.bairro || x.district, city: j.localidade ? `${j.localidade} – ${j.uf}` : x.city }));
-        setCepState('ok');
+        setCepResult({ cep, state: 'ok' });
       })
-      .catch(() => alive && setCepState('fail'))
+      .catch(() => alive && setCepResult({ cep, state: 'fail' }))
       .finally(() => clearTimeout(timer));
     return () => {
       alive = false;
       ctrl.abort();
     };
-  }, [f.cep, church.cep]);
+  }, [cep, lookup]);
 
   const errors = {
     name: !f.name.trim() ? 'Informe o nome da igreja.' : null,

@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { Href, router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { Button, TextLink } from './Button';
@@ -36,7 +36,7 @@ export function PersonForm({ d, person }: { d: AppData; person?: Person }) {
   const repo = useRepo();
   const { toast } = useFeedback();
   const editing = !!person;
-  const back = editing ? `/pessoas/${person!.id}` : '/pessoas';
+  const back: Href = editing ? `/pessoas/${person!.id}` : '/pessoas';
   const [name, setName] = useState(person?.name ?? '');
   const [phone, setPhone] = useState(person?.phone ?? '');
   const [email, setEmail] = useState(person?.email ?? '');

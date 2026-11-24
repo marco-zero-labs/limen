@@ -1,4 +1,4 @@
-import { createContext, DependencyList, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { createContext, DependencyList, ReactNode, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { LocalRepository } from './local';
 import type { Repository } from './repository';
 import { storage } from './storage';
@@ -82,29 +82,44 @@ export type Query<T> = { data: T | undefined; loading: boolean; error: Error | n
 export function useQuery<T>(fn: (repo: Repository) => Promise<T>, deps: DependencyList = []): Query<T> {
   const repo = useRepo();
   const [state, setState] = useState<{ data: T | undefined; loading: boolean; error: Error | null }>({ data: undefined, loading: true, error: null });
+  // sempre a versão mais nova de `fn`, sem precisar dela nas dependências dos efeitos
   const fnRef = useRef(fn);
-  fnRef.current = fn;
+  useLayoutEffect(() => {
+    fnRef.current = fn;
+  });
   const seq = useRef(0);
 
-  const run = useCallback(
-    (initial: boolean) => {
-      const id = ++seq.current;
-      if (initial) setState((s) => ({ data: s.data, loading: true, error: null }));
-      fnRef
-        .current(repo)
-        .then((data) => {
-          if (id === seq.current) setState({ data, loading: false, error: null });
-        })
-        .catch((error: Error) => {
-          if (id === seq.current) setState({ data: undefined, loading: false, error });
-        });
-    },
-    [repo],
-  );
+  // só muda o estado quando a resposta chega (a mais recente vence)
+  const load = useCallback(() => {
+    const id = ++seq.current;
+    fnRef
+      .current(repo)
+      .then((data) => {
+        if (id === seq.current) setState({ data, loading: false, error: null });
+      })
+      .catch((error: Error) => {
+        if (id === seq.current) setState({ data: undefined, loading: false, error });
+      });
+  }, [repo]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => run(true), [run, ...deps]);
-  useEffect(() => repo.subscribe(() => run(false)), [repo, run]);
+  // deps novas: volta a "carregando" já nesta renderização, mantendo os dados na tela
+  const [prevDeps, setPrevDeps] = useState(deps);
+  if (!sameDeps(prevDeps, deps)) {
+    setPrevDeps(deps);
+    setState((s) => ({ data: s.data, loading: true, error: null }));
+  }
 
-  return { ...state, reload: () => run(true) };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- quem chama decide, pelas deps, quando recarregar
+  useEffect(() => load(), [load, ...deps]);
+  useEffect(() => repo.subscribe(() => load()), [repo, load]);
+
+  const reload = () => {
+    setState((s) => ({ data: s.data, loading: true, error: null }));
+    load();
+  };
+  return { ...state, reload };
+}
+
+function sameDeps(a: DependencyList, b: DependencyList) {
+  return a.length === b.length && a.every((x, i) => Object.is(x, b[i]));
 }

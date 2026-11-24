@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
 import { Button, TextLink } from '@/components/Button';
 import { DataState } from '@/components/DataState';
@@ -65,7 +65,6 @@ function Form({ d, activity, options }: { d: AppData; activity: Activity; option
   const [choosing, setChoosing] = useState(false);
   const [saving, setSaving] = useState(false);
   const today = todayDay();
-  useEffect(() => setChoosing(false), [activity.id]);
 
   const save = async () => {
     setSaving(true);
@@ -142,7 +141,12 @@ function Ref({ label, value }: { label: string; value: number }) {
 /** − e + grandes, com o número editável no meio. */
 function Counter({ label, hint, value, onChange, before }: { label: string; hint?: string; value: number; onChange: (n: number) => void; before?: string }) {
   const [text, setText] = useState(String(value));
-  useEffect(() => setText(String(value)), [value]);
+  // quando o valor muda por fora (− ou +), o texto acompanha
+  const [shown, setShown] = useState(value);
+  if (value !== shown) {
+    setShown(value);
+    setText(String(value));
+  }
   const step = (n: number) => onChange(Math.max(0, value + n));
   const btn = (sign: '−' | '+', n: number) => (
     <Pressable

@@ -2,6 +2,8 @@
 
 Limen (antes Ekklesia, do latim "soleira"): app de gestão de igrejas evangélicas da Marco Zero Labs. Um único projeto Expo que roda no celular (Expo Go) e na web.
 
+> Situação: nível 1 (protótipo). Roda com dados fictícios e sem servidor; nenhuma igreja usa ainda.
+
 - **Web:** https://marco-zero-labs.github.io/limen/
 - **Design de referência:** [marco-zero-labs/ekklesia-design](https://github.com/marco-zero-labs/ekklesia-design) (33 telas; tokens em `telas/design-system.html`)
 
@@ -47,7 +49,7 @@ __tests__/          testes unitários
 
 ### Dados
 
-Não há servidor nesta versão. As telas falam só com a interface `Repository` (`src/data/repository.ts`); a implementação `LocalRepository` guarda tudo no aparelho: AsyncStorage no celular e localStorage na web. Para trocar por Supabase, basta outra implementação da interface, instanciada em `src/data/DataProvider.tsx`.
+Não há servidor nesta versão. As telas falam só com a interface `Repository` (`src/data/repository.ts`); a implementação `LocalRepository` guarda tudo no aparelho: AsyncStorage no celular e localStorage na web. Para usar um servidor (o backend ainda será escolhido, #12), basta outra implementação da interface, instanciada em `src/data/DataProvider.tsx`.
 
 Consequência importante: **cada aparelho tem os seus dados**. A ficha pública pelo QR code e o link de confirmação de escala funcionam de verdade, mas a resposta fica no aparelho onde foi preenchida. Para ver o fluxo completo nesta versão, use o mesmo aparelho/navegador (ex.: abra o link de confirmação a partir da tela da escala).
 
@@ -56,3 +58,10 @@ Os dados de exemplo (Igreja Batista do Bairro Novo, 538 cadastros, 24 visitantes
 ### Estados
 
 Em **Configurações › Demonstração dos estados** dá para simular conexão lenta (skeleton) e erro (Tentar de novo). **Começar com a igreja vazia** mostra o primeiro uso e a importação de planilha (CSV).
+
+## Trabalhando aqui
+
+- Documentação: [docs/README.md](docs/README.md) (produto, roadmap, decisões em aberto, glossário)
+- Regras para o Claude Code e outros agentes: [CLAUDE.md](CLAUDE.md), [AGENTS.md](AGENTS.md)
+- O que mudou: [CHANGELOG.md](CHANGELOG.md)
+- Andamento: [projeto Limen no GitHub](https://github.com/orgs/marco-zero-labs/projects/2)

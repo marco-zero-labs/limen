@@ -1,4 +1,4 @@
-Owner: Ryan · Status: draft · Last reviewed: 2026-11-24
+Owner: Ryan · Status: draft · Last reviewed: 2026-11-25
 
 # Issues plan
 
@@ -83,9 +83,9 @@ Epics: #1 platform foundation (Caio); #2 app on a real backend (Ryan); #3 remind
 | #4 | House docs: CLAUDE.md, AGENTS.md, docs/README, product, roadmap, open-decisions, glossary, CHANGELOG | docs | Ryan | M | p0 | none |
 | #5 | Handbook: GitHub workflow, CODEOWNERS, issue and PR templates | docs | Caio | S | p0 | none |
 | #6 | CI on pull requests: `app` job with typecheck, lint and tests; Pages deploy only from `main` | infra | Caio | S | p0 | #8 |
-| #7 | Docs workflow: markdownlint, link check and docs guard (`docs` job) | infra | Caio | S | p1 | #4 |
+| #7 | Docs workflow: markdownlint, link check and docs guard (`docs` job) | infra | Caio | S | p0 | #4 |
 | #8 | Set up `npx expo lint` and fix what it finds | mobile | Ryan | S | p0 | none |
-| #9 | `dev` and `qa` branches and the three rulesets | infra | Caio | S | p0 | #6 |
+| #9 | `dev` and `qa` branches and the three rulesets | infra | Caio | S | p0 | #6, #7 |
 | #10 | ADR 0001: stack and architecture of the prototype (Expo, Expo Router, Repository interface) | docs | Caio | S | p0 | none |
 | #11 | ADR 0002: dev, qa and main branches | docs | Caio | S | p1 | #9 |
 | #12 | Choose the backend and record it in ADR 0003 (Supabase is one option; Caio decides) | platform | Caio | M | p0 | none |
@@ -173,4 +173,4 @@ The template's level 3.
 
 ## 3. Still to do
 
-- Branches and rulesets (#9), after the CI job `app` exists (#6), so the required checks can be found.
+- Branches and rulesets (#9), after the CI jobs `app` (#6) and `docs` (#7) exist, so the required checks can be found.
